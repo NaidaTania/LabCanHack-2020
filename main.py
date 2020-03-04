@@ -4,6 +4,8 @@ import requests, json
 from flask import Flask,request,jsonify
 from flask_restful import Resource,Api
 import nlping
+import aprioring
+import re
 
 PORT = 4444
 Handler = http.server.SimpleHTTPRequestHandler
@@ -66,9 +68,9 @@ class NLP(Resource):
         thesymptoms = self.NLPing()
         returnjson = {
             "uid" : self.uid,
-            "suggestions" : self.suggestions
+            "suggestions" : thesymptoms
         }
-        resp = jsonify(thesymptoms)
+        resp = jsonify(returnjson)
         resp.status_code = 200
         return resp 
 
@@ -82,8 +84,68 @@ class Home(Resource):
         print("UP AND RUNNING AND HAPPY")
         return "UP AND RUNNING AND HAPPY"
 
-api.add_resource(NLP, '/symptoms/<user_id>', '/symptoms') # Route_1
+#a shitty alternative to database :D
+confirmedsymps = {}
+
+class Predict(Resource):
+    def __init__(self):
+        self.uid = ""
+        self.confirmedsymps = []
+    # def get(self):
+    #     self.uid = request.json["uid"]
+    #     #return our current statistics
+    #     if self.uid not in confirmedsymps.keys():
+    #         return "no diagnosis yet!"
+    #     #else we apriori the heck out of this
+    #     itemsets = aprioring.apriit(confirmedsymps[self.uid])
+    #     print("ITEMSETS:",itemsets)
+    #     return itemsets
+    def post(self):
+        self.uid = request.json["uid"]
+        for s in request.json["suggestions"]:
+            if self.uid not in confirmedsymps:
+                confirmedsymps[self.uid] = []
+            if s not in confirmedsymps[self.uid]:
+                confirmedsymps[self.uid].append(s)
+        #then we predict the heck outta it and return
+        itemsets = aprioring.apriit(confirmedsymps[self.uid])
+        returnjson = {
+            "uid" : self.uid,
+            "text":"You may experience these commonly related symptoms?",
+            "suggestions" : [x for x in itemsets.keys()]
+        }
+        resp = jsonify(returnjson)
+        resp.status_code = 200
+        return resp 
+        #update the confirmed stats?
+
+class Confirmed(Resource):
+    def __init__(self):
+        self.uid = ""
+    def get(self):
+        self.uid = request.json["uid"]
+        #return our current statistics
+        if self.uid not in confirmedsymps.keys():
+            return "no diagnosis yet!"
+        #else we apriori the heck out of this
+        diagperc = aprioring.getdiagnosed(confirmedsymps[self.uid])
+        cleandiagperc = {}
+        for k in diagperc.keys():
+            newk = re.sub("\u000b",":",k)
+            cleandiagperc[newk] = diagperc[k]
+        returnjson = {
+            "uid" : self.uid,
+            "text":"Your possible diagnosis based on percentage of symptoms",
+            "diagnosis" : cleandiagperc
+        }
+        resp = jsonify(returnjson)
+        resp.status_code = 200
+        return resp 
+
+api.add_resource(NLP, '/symptoms/<user_id>', '/symptoms') # First pass when I pass you everything
 api.add_resource(Home, '/') # Route_1
+api.add_resource(Predict, '/predict') # 2nd pass when
+api.add_resource(Confirmed, '/diagnosis') # 2nd pass when 
 
 
 if __name__ == '__main__':
@@ -94,5 +156,11 @@ if __name__ == '__main__':
 with socketserver.TCPServer(("",PORT),Handler) as httpd:
     print("SERVING AT PORT", PORT)
     httpd.serve_forever()
+'''
+
+'''
+Ideally we want the list of confirmed symtomps to be 
+
+
 '''
 
