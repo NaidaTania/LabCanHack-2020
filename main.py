@@ -22,8 +22,11 @@ class NLP(Resource):
         self.suggestions = [] #list of symptoms, keep track
         self.diagnosis = {}
 
-    def NLPing():
-        nlping.sentence = self.text 
+    def NLPing(self):
+        nlping.samplestring = self.text 
+        print("nlping BEFORE",nlping.samplestring)
+        print("SELF.TEXT",self.text)
+        print("nlping AFTER",nlping.samplestring)
         '''
         Using text,
         I clean it up (filter stop words, rid punctuations, tokenize and maybe stem)
@@ -60,10 +63,10 @@ class NLP(Resource):
         self.uid = request.json["uid"]
         self.text = request.json["text"]
         self.suggestions = request.json["suggestions"] #list of symptoms, keep tra
-        thesymptoms = NLPing()
+        thesymptoms = self.NLPing()
         returnjson = {
-            uid : self.uid,
-            suggestions : self.suggestions
+            "uid" : self.uid,
+            "suggestions" : self.suggestions
         }
         resp = jsonify(thesymptoms)
         resp.status_code = 200

@@ -10,6 +10,12 @@ from nltk.probability import FreqDist
 import pandas as pd 
 import numpy as np
 
+#smaller
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+
 #copy pasta-ed
 def binary_search(item_list,item):
     first = 0
@@ -32,42 +38,43 @@ def binary_search(item_list,item):
 
 samplestring = "My stomach hurts "
 
-#tokenize the usersentence
-samplestring_tokens = word_tokenize(samplestring)
-#Filter stop words
-stopWords = set(stopwords.words('english'))
-samplestring_tokens_filtered = []
-
-for w in samplestring_tokens:
-    if w.lower() not in stopWords:
-        samplestring_tokens_filtered.append(w)
-#Filter punctuation
-samplestring_tokens_filtered_postpunctuation = []
-punctuation = re.compile(r'[-.?!,:;()|]')
-for w in samplestring_tokens_filtered:
-    word = punctuation.sub("",w)
-    if len(word) > 0:
-        samplestring_tokens_filtered_postpunctuation.append(word)
-
-#List of symtoms all sorted for binary search
-symptoms = pd.read_csv('diagnosis_analysis/sym_t.csv')
-symptoms = symptoms.dropna()
-symstr = ' '.join(symptoms["symptom"])
-#List of key words vs occurences in symptoms, sorted
-rawsymtoken = nltk.word_tokenize(symstr)
-symptokens = [x.lower() for x in rawsymtoken]
-symptokens
-symfdist = FreqDist(symptokens)
-symvocab = sorted(symfdist.keys())
-symoccurences = {}
-for key in symvocab:
-    symoccurences[key] = []
-    for s in symptoms["symptom"]:
-        if key in s.lower():
-            symoccurences[key].append(s)
 
 
 def returnMeSymps():
+	#tokenize the usersentence
+	samplestring_tokens = word_tokenize(samplestring)
+	#Filter stop words
+	stopWords = set(stopwords.words('english'))
+	samplestring_tokens_filtered = []
+
+	for w in samplestring_tokens:
+	    if w.lower() not in stopWords:
+	        samplestring_tokens_filtered.append(w)
+	#Filter punctuation
+	samplestring_tokens_filtered_postpunctuation = []
+	punctuation = re.compile(r'[-.?!,:;()|]')
+	for w in samplestring_tokens_filtered:
+	    word = punctuation.sub("",w)
+	    if len(word) > 0:
+	        samplestring_tokens_filtered_postpunctuation.append(word)
+
+	#List of symtoms all sorted for binary search
+	symptoms = pd.read_csv('diagnosis_analysis/sym_t.csv')
+	symptoms = symptoms.dropna()
+	symstr = ' '.join(symptoms["symptom"])
+	#List of key words vs occurences in symptoms, sorted
+	rawsymtoken = nltk.word_tokenize(symstr)
+	symptokens = [x.lower() for x in rawsymtoken]
+	symptokens
+	symfdist = FreqDist(symptokens)
+	symvocab = sorted(symfdist.keys())
+	symoccurences = {}
+	for key in symvocab:
+	    symoccurences[key] = []
+	    for s in symptoms["symptom"]:
+	        if key in s.lower():
+	            symoccurences[key].append(s)
+
 	SYMPTOMS_LIST = []
 	#Let's filter the verbs before we lemma and stem 
 	#Not sure if we need to chunk. Depends on possible user language symptoms
