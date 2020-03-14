@@ -66,7 +66,7 @@ A video demo of the product can be found [here](https://s3.us-west-2.amazonaws.c
 {
 	"uid" : "1234xxxx",
 	"text" : "I have a headache",
-	"suggestions" : ["Headache after trauma","Neck ache or pain","Loss of balance"]
+	"suggestions" : ["Head injury","Headache after trauma"]
 }
 
 ```
@@ -76,7 +76,16 @@ A video demo of the product can be found [here](https://s3.us-west-2.amazonaws.c
     "uid": "1234xxxx",
     "text": "Your possible diagnosis based on percentage of symptoms",
     "diagnosis": {
-        "Vertebral artery dissection:neck artery tear": "33%"
+        "Basilar skull fracture:broken skull": "50%",
+        "Cerebrospinal fluid rhinorrhea:leakage of brain fluid from the nose": "67%",
+        "Concussion": "15%",
+        "Epidural hematoma:bleeding around brain or spine": "17%",
+        "Hemotympanum:blood behind ear drum": "50%",
+        "Intracranial hemorrhage:bleeding in brain": "29%",
+        "Post concussive syndrome:symptoms after a concussion": "33%",
+        "Skull fracture:broken bone": "67%",
+        "Subarachnoid hemorrhage:brain bleeding": "40%",
+        "Subdural hematoma:bleeding on brain": "12%"
     }
 }
 
